@@ -40,12 +40,23 @@ public class BasicGameApp implements Runnable {
 	public BufferStrategy bufferStrategy;
 	public Image astroPic;
 
+	public Image salmonPic;
+
+	public Image elkpic;
+
    //Declare the objects used in the program
    //These are things that are made up of more than one variable type
 	private Astronaut astro;
 	private Astronaut jack;
 
+	private Astronaut salmon;
+
+	private Astronaut elk;
+
+
+
 	public Image background;
+	public Image winBackground;
 
 
 
@@ -68,8 +79,22 @@ public class BasicGameApp implements Runnable {
       //variable and objects
       //create (construct) the objects needed for the game and load up 
 		astroPic = Toolkit.getDefaultToolkit().getImage("bearpic.jpg"); //load the picture
-		astro = new Astronaut(10,100);
-		jack = new Astronaut(10,50);
+		salmonPic = Toolkit.getDefaultToolkit().getImage("salmon.jpeg");
+		elkpic = Toolkit.getDefaultToolkit().getImage("elk.jpg");
+		winBackground = Toolkit.getDefaultToolkit().getImage("victorypic.jpeg");
+		astro = new Astronaut(10,500);
+		jack = new Astronaut(100,50);
+		salmon = new Astronaut(40,300);
+		elk = new Astronaut(50,300);
+		jack.dx = 2;
+		jack.dy = 3;
+		salmon.dx = 2;
+		salmon.dy = 4;
+		elk.dx =3;
+		elk.dy = 3;
+		astro.dx = 5;
+		astro.dy = 4;
+
 
 
 
@@ -92,8 +117,8 @@ public class BasicGameApp implements Runnable {
          moveThings();  //move all the game objects
          render();  // paint the graphics
          pause(20); // sleep for 10 ms
-			jack.dx = 2;
-			jack.dy = 3;
+
+
 		}
 	}
 
@@ -101,8 +126,18 @@ public class BasicGameApp implements Runnable {
 	public void moveThings()
 	{
       //calls the move( ) code in the objects
-		astro.move();
-		jack.move();
+	//	astro.move();
+//		jack.move();
+//		salmon.move();
+		astro.wrap();
+//		System.out.println(salmon.dx +",  "+ salmon.dy + " x" + salmon.xpos +" y " + salmon.ypos);
+
+		jack.bounce();
+		salmon.bounce();
+		elk.bounce();
+		crash();
+		
+		//System.out.println(salmon.dx +",  "+ salmon.dy + " x" + salmon.xpos +" y " + salmon.ypos);
 
 	}
 	
@@ -158,10 +193,98 @@ public class BasicGameApp implements Runnable {
       //draw the image of the astronaut
 		g.drawImage(astroPic, astro.xpos, astro.ypos, astro.width, astro.height, null);
 		g.drawImage(astroPic, jack.xpos, jack.ypos, astro.width, astro.height, null);
+		g.drawImage(salmonPic,salmon.xpos,salmon.ypos,astro.width,astro.height,null);
+		g.drawImage(elkpic,elk.xpos,elk.ypos,astro.width,astro.height,null);
+		g.draw(new Rectangle(jack.xpos,jack.ypos,jack.width,jack.height));
+		g.draw(new Rectangle(astro.xpos,astro.ypos,astro.width,jack.height));
+		g.draw(new Rectangle(salmon.xpos,salmon.ypos,jack.width,jack.height));
+		g.draw(new Rectangle(elk.xpos,elk.ypos,jack.width,jack.height));
+		g.drawString("First Bear to 10 Wins!!!",375,200);
+		g.drawString("Jack Food Level Is:",375,500);
+		g.drawString(Integer.toString(jack.foodLevel),500,500);
+		g.drawString("Astro Food Level Is:",375,650);
+		g.drawString(Integer.toString(astro.foodLevel),500,650);
+
+
+		if (jack.foodLevel > 10){
+			System.out.println("The Bears Win!!!");
+			//g.clearRect(0, 0, WIDTH, HEIGHT);
+			g.drawImage(winBackground,0,0,1000,700,null);
+		}
+		if (astro.foodLevel > 10){
+			System.out.println("The Bears Win!!!");
+		//	g.clearRect(0, 0, WIDTH, HEIGHT);
+			g.drawImage(winBackground,0,0,1000,700,null);
+		}
+
+
+
+
+
 
 
 		g.dispose();
 
 		bufferStrategy.show();
+	}
+	public void crash(){
+
+		if(jack.rec.intersects(salmon.rec)){
+
+			jack.dx = -1*jack.dx;
+			jack.dy = -1* jack.dy;
+			salmon.dx = -1*salmon.dx;
+			salmon.dy = -1* salmon.dy;
+			jack.foodLevel = jack.foodLevel+1;
+//			System.out.println(jack.foodLevel);
+
+
+
+		}
+		if(astro.rec.intersects(salmon.rec)){
+
+			astro.dx = -1*astro.dx;
+			astro.dy = -1* astro.dy;
+			astro.dx = -1*astro.dx;
+			astro.dy = -1* astro.dy;
+			astro.foodLevel = astro.foodLevel+1;
+//			System.out.println(astro.foodLevel);
+
+
+
+		}
+		if(jack.rec.intersects(elk.rec)){
+
+			elk.dx = -1*elk.dx;
+			elk.dy = -1* elk.dy;
+			jack.dx = -1*jack.dx;
+			jack.dy = -1* jack.dy;
+			jack.foodLevel = jack.foodLevel+1;
+			System.out.println(jack.foodLevel);
+
+
+
+		}
+		if(astro.rec.intersects(elk.rec)){
+
+			elk.dx = -1*elk.dx;
+			elk.dy = -1* elk.dy;
+			astro.dx = -1*astro.dx;
+			astro.dy = -1* astro.dy;
+			astro.foodLevel = astro.foodLevel+1;
+			System.out.println(astro.foodLevel);
+
+		}
+		if(astro.rec.intersects(jack.rec)){
+
+			jack.dx = -1*jack.dx;
+			jack.dy = -1* jack.dy;
+			astro.dx = -1*astro.dx;
+			astro.dy = -1* astro.dy;
+
+
+		}
+
+
 	}
 }
