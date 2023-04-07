@@ -42,6 +42,13 @@ public class BasicGameApp implements Runnable, KeyListener, MouseListener, Mouse
 	public Image astroPic;
 
 	public Image salmonPic;
+	public Image gameOverscreen;
+
+
+	public boolean gameStarted;
+
+	public boolean mouseOnscreen;
+	public boolean gameOver;
 
 	public Image elkpic;
 
@@ -53,6 +60,10 @@ public class BasicGameApp implements Runnable, KeyListener, MouseListener, Mouse
 	private Astronaut salmon;
 
 	private Astronaut elk[]; //declared an array of elk
+
+	public Image startScreen;
+
+
 
 
 
@@ -85,8 +96,10 @@ public class BasicGameApp implements Runnable, KeyListener, MouseListener, Mouse
 		salmonPic = Toolkit.getDefaultToolkit().getImage("salmon.jpeg");
 		elkpic = Toolkit.getDefaultToolkit().getImage("elk.jpg");
 		winBackground = Toolkit.getDefaultToolkit().getImage("victorypic.jpeg");
-		astro = new Astronaut(10,500);
+		startScreen = Toolkit.getDefaultToolkit().getImage("videogamestartscreen.jpeg");
+		gameOverscreen= Toolkit.getDefaultToolkit().getImage("gameover.jpeg");
 		jack = new Astronaut(100,50);
+		astro = new Astronaut(150,60);
 		salmon = new Astronaut(40,300);
 		elk = new Astronaut[10];
 		// constructed array for the elks
@@ -134,19 +147,24 @@ public class BasicGameApp implements Runnable, KeyListener, MouseListener, Mouse
 
 	public void moveThings()
 	{
-      //calls the move( ) code in the objects
-	//	astro.move();
+		if (mouseOnscreen == true){
+			//calls the move( ) code in the objects
+			//	astro.move();
 //		jack.move();
 //		salmon.move();
-		astro.wrap();
+			astro.wrap();
 //		System.out.println(salmon.dx +",  "+ salmon.dy + " x" + salmon.xpos +" y " + salmon.ypos);
 
-		jack.bounce();
-		salmon.bounce();
-		for (int x=0; x<elk.length;x++) {
-			elk[x].bounce();  // put [x] everywhere
+			jack.bounce();
+			salmon.bounce();
+			for (int x=0; x<elk.length;x++) {
+				elk[x].bounce();  // put [x] everywhere
+			}
+			crash();
+
 		}
-		crash();
+
+
 		
 		//System.out.println(salmon.dx +",  "+ salmon.dy + " x" + salmon.xpos +" y " + salmon.ypos);
 
@@ -200,39 +218,93 @@ public class BasicGameApp implements Runnable, KeyListener, MouseListener, Mouse
 	private void render() {
 		Graphics2D g = (Graphics2D) bufferStrategy.getDrawGraphics();
 		g.clearRect(0, 0, WIDTH, HEIGHT);
-
-		g.drawImage(background,0,0,1000,700,null);
-
-      //draw the image of the astronaut
-		g.drawImage(astroPic, astro.xpos, astro.ypos, astro.width, astro.height, null);
-		g.drawImage(astroPic, jack.xpos, jack.ypos, astro.width, astro.height, null);
-		g.drawImage(salmonPic,salmon.xpos,salmon.ypos,astro.width,astro.height,null);
-		for (int x=0; x<elk.length;x++) {
-			g.drawImage(elkpic, elk[x].xpos, elk[x].ypos, astro.width, astro.height, null);
+		if (gameStarted==false) {
+			g.drawImage(startScreen,0,0,1000,700,null);
+			g.drawString("Press the Space Bar to Start Game!!",375,200);
 		}
-		g.draw(new Rectangle(jack.xpos,jack.ypos,jack.width,jack.height));
-		g.draw(new Rectangle(astro.xpos,astro.ypos,astro.width,jack.height));
-		g.draw(new Rectangle(salmon.xpos,salmon.ypos,jack.width,jack.height));
-		for (int x=0; x<elk.length;x++) {
-			g.draw(new Rectangle(elk[x].xpos, elk[x].ypos, jack.width, jack.height));
-		}
-		g.drawString("First Bear to 10 Wins!!!",375,200);
-		g.drawString("Jack Food Level Is:",375,500);
-		g.drawString(Integer.toString(jack.foodLevel),500,500);
-		g.drawString("Astro Food Level Is:",375,650);
-		g.drawString(Integer.toString(astro.foodLevel),500,650);
+		if (gameStarted==true){
+			g.drawImage(background,0,0,1000,700,null);
+
+			//draw the image of the astronaut
+			g.drawImage(astroPic, astro.xpos, astro.ypos, astro.width, astro.height, null);
+			g.drawImage(astroPic, jack.xpos, jack.ypos, astro.width, astro.height, null);
+			g.drawImage(salmonPic,salmon.xpos,salmon.ypos,astro.width,astro.height,null);
+			for (int x=0; x<elk.length;x++) {
+				if (elk[x].isAlive==true) {
+					g.drawImage(elkpic, elk[x].xpos, elk[x].ypos, astro.width, astro.height, null);
+				}
+			}
+			g.draw(new Rectangle(jack.xpos,jack.ypos,jack.width,jack.height));
+			g.draw(new Rectangle(astro.xpos,astro.ypos,astro.width,astro.height));
+			g.draw(new Rectangle(salmon.xpos,salmon.ypos,salmon.width,salmon.height));
+			for (int x=0; x<elk.length;x++) {
+				if (elk[x].isAlive==true){
+					g.draw(new Rectangle(elk[x].xpos, elk[x].ypos, jack.width, jack.height));
+				}
+
+			}
+			g.drawString("Try to get the highest score!!!",375,200);
+			g.drawString("Press B to end the game!",375,300);
+			g.drawString("Jack Food Level Is:",375,500);
+			g.drawString(Integer.toString(jack.foodLevel),500,500);
+			g.drawString("Astro Food Level Is:",375,650);
+			g.drawString(Integer.toString(astro.foodLevel),500,650);
+
+			if (gameOver==true) {
+				g.drawImage(gameOverscreen,0,0,1000,700,null);
+			}
 
 
-		if (jack.foodLevel > 10){
-			System.out.println("The Bears Win!!!");
-			//g.clearRect(0, 0, WIDTH, HEIGHT);
-			g.drawImage(winBackground,0,0,1000,700,null);
+//		if (jack.foodLevel > 100){
+//			System.out.println("The Bears Win!!!");
+//			//g.clearRect(0, 0, WIDTH, HEIGHT);
+//			g.drawImage(winBackground,0,0,1000,700,null);
+//		}
+//		if (astro.foodLevel > 100){
+//			System.out.println("The Bears Win!!!");
+//		//	g.clearRect(0, 0, WIDTH, HEIGHT);
+//			g.drawImage(winBackground,0,0,1000,700,null);
+//		}
+
+
 		}
-		if (astro.foodLevel > 10){
-			System.out.println("The Bears Win!!!");
-		//	g.clearRect(0, 0, WIDTH, HEIGHT);
-			g.drawImage(winBackground,0,0,1000,700,null);
-		}
+//		g.drawImage(background,0,0,1000,700,null);
+//
+//      //draw the image of the astronaut
+//		g.drawImage(astroPic, astro.xpos, astro.ypos, astro.width, astro.height, null);
+//		g.drawImage(astroPic, jack.xpos, jack.ypos, astro.width, astro.height, null);
+//		g.drawImage(salmonPic,salmon.xpos,salmon.ypos,astro.width,astro.height,null);
+//		for (int x=0; x<elk.length;x++) {
+//			if (elk[x].isAlive==true) {
+//				g.drawImage(elkpic, elk[x].xpos, elk[x].ypos, astro.width, astro.height, null);
+//			}
+//		}
+//		g.draw(new Rectangle(jack.xpos,jack.ypos,jack.width,jack.height));
+//		g.draw(new Rectangle(astro.xpos,astro.ypos,astro.width,jack.height));
+//		g.draw(new Rectangle(salmon.xpos,salmon.ypos,jack.width,jack.height));
+//		for (int x=0; x<elk.length;x++) {
+//			if (elk[x].isAlive==true){
+//				g.draw(new Rectangle(elk[x].xpos, elk[x].ypos, jack.width, jack.height));
+//			}
+//
+//		}
+//		g.drawString("First Bear to 10 Wins!!!",375,200);
+//		g.drawString("Jack Food Level Is:",375,500);
+//		g.drawString(Integer.toString(jack.foodLevel),500,500);
+//		g.drawString("Astro Food Level Is:",375,650);
+//		g.drawString(Integer.toString(astro.foodLevel),500,650);
+//
+//
+////		if (jack.foodLevel > 100){
+////			System.out.println("The Bears Win!!!");
+////			//g.clearRect(0, 0, WIDTH, HEIGHT);
+////			g.drawImage(winBackground,0,0,1000,700,null);
+////		}
+////		if (astro.foodLevel > 100){
+////			System.out.println("The Bears Win!!!");
+////		//	g.clearRect(0, 0, WIDTH, HEIGHT);
+////			g.drawImage(winBackground,0,0,1000,700,null);
+////		}
 
 
 
@@ -244,66 +316,66 @@ public class BasicGameApp implements Runnable, KeyListener, MouseListener, Mouse
 
 		bufferStrategy.show();
 	}
-	public void crash(){
+	public void crash() {
+		if (gameStarted == true) {
+			if (jack.rec.intersects(salmon.rec)) {
 
-		if(jack.rec.intersects(salmon.rec)){
-
-			jack.dx = -1*jack.dx;
-			jack.dy = -1* jack.dy;
-			salmon.dx = -1*salmon.dx;
-			salmon.dy = -1* salmon.dy;
-			jack.foodLevel = jack.foodLevel+1;
+				jack.dx = -1 * jack.dx;
+				jack.dy = -1 * jack.dy;
+				salmon.dx = -1 * salmon.dx;
+				salmon.dy = -1 * salmon.dy;
+				jack.foodLevel = jack.foodLevel + 1;
 //			System.out.println(jack.foodLevel);
 
 
-
-		}
-		if(astro.rec.intersects(salmon.rec)){
-
-			astro.dx = -1*astro.dx;
-			astro.dy = -1* astro.dy;
-			astro.dx = -1*astro.dx;
-			astro.dy = -1* astro.dy;
-			astro.foodLevel = astro.foodLevel+1;
-//			System.out.println(astro.foodLevel);
-
-
-
-		}
-		for (int x=0; x<elk.length;x++) {
-			if (jack.rec.intersects(elk[x].rec)) {
-
-				elk[x].dx = -1 * elk[x].dx;
-				elk[x].dy = -1 * elk[x].dy;
-				jack.dx = -1 * jack.dx;
-				jack.dy = -1 * jack.dy;
-				jack.foodLevel = jack.foodLevel + 1;
-
-
 			}
-		}
-		for (int x=0; x<elk.length;x++) {
-			if (astro.rec.intersects(elk[x].rec)) {
+			if (astro.rec.intersects(salmon.rec)) {
 
-				elk[x].dx = -1 * elk[x].dx;
-				elk[x].dy = -1 * elk[x].dy;
+				astro.dx = -1 * astro.dx;
+				astro.dy = -1 * astro.dy;
 				astro.dx = -1 * astro.dx;
 				astro.dy = -1 * astro.dy;
 				astro.foodLevel = astro.foodLevel + 1;
+//			System.out.println(astro.foodLevel);
+
 
 			}
+			for (int x = 0; x < elk.length; x++) {
+				if (jack.rec.intersects(elk[x].rec)) {
+
+					elk[x].dx = -1 * elk[x].dx;
+					elk[x].dy = -1 * elk[x].dy;
+					jack.dx = -1 * jack.dx;
+					jack.dy = -1 * jack.dy;
+					jack.foodLevel = jack.foodLevel + 1;
+
+
+				}
+			}
+			for (int x = 0; x < elk.length; x++) {
+				if (astro.rec.intersects(elk[x].rec)) {
+
+					elk[x].dx = -1 * elk[x].dx;
+					elk[x].dy = -1 * elk[x].dy;
+					elk[x].isAlive = false;
+					astro.dx = -1 * astro.dx;
+					astro.dy = -1 * astro.dy;
+					astro.foodLevel = astro.foodLevel + 1;
+
+				}
+			}
+			if (astro.rec.intersects(jack.rec)) {
+
+				jack.dx = -1 * jack.dx;
+				jack.dy = -1 * jack.dy;
+				astro.dx = -1 * astro.dx;
+				astro.dy = -1 * astro.dy;
+
+
+			}
+
+
 		}
-		if(astro.rec.intersects(jack.rec)){
-
-			jack.dx = -1*jack.dx;
-			jack.dy = -1* jack.dy;
-			astro.dx = -1*astro.dx;
-			astro.dy = -1* astro.dy;
-
-
-		}
-
-
 	}
 
 	@Override
@@ -315,6 +387,9 @@ public class BasicGameApp implements Runnable, KeyListener, MouseListener, Mouse
 	public void keyPressed(KeyEvent e) {
 		int code = e.getKeyCode();
 		System.out.println(code);
+		if (code == 32) {
+			gameStarted = true;
+		}
 		if (code == 83) {
 			jack.dy = jack.dy*-1;
 		}
@@ -324,11 +399,19 @@ public class BasicGameApp implements Runnable, KeyListener, MouseListener, Mouse
 		if (code == 65) {
 			jack.dx = jack.dx*-1;
 		}
+		if (code == 66) {
+			gameOver=true;
+		}
 		if (code == 68) {
 			jack.dx = jack.dx*-1;
 		}
 		if (code == 71) {
 			jack.height = jack.height+10;
+			jack.width = jack.width+10;
+			salmon.width=salmon.width+10;
+			astro.width=astro.width+10;
+			salmon.height=salmon.height+10;
+			astro.height=astro.height+10;
 		}
 
 	}
@@ -364,12 +447,13 @@ public class BasicGameApp implements Runnable, KeyListener, MouseListener, Mouse
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
+		mouseOnscreen = true;
 
 	}
 
 	@Override
 	public void mouseExited(MouseEvent e) {
-
+		mouseOnscreen = false;
 	}
 
 	@Override
@@ -379,20 +463,8 @@ public class BasicGameApp implements Runnable, KeyListener, MouseListener, Mouse
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
-//		astro.xpos=e.getX();
-//		astro.ypos=e.getY();
-		if (e.getX()-astro.xpos>50) {
-			astro.xpos=e.getX();
-		}
-		if (e.getY()-astro.ypos>50) {
-			astro.ypos=e.getY();
-		}
-		if (e.getX()-jack.xpos>50) {
-			jack.xpos=e.getX();
-		}
-		if (e.getY()-jack.ypos>50) {
-			jack.ypos=e.getY();
-		}
+		astro.xpos=e.getX();
+		astro.ypos=e.getY();
 
 	}
 }

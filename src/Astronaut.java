@@ -21,6 +21,7 @@ public class Astronaut {
 
     public int foodLevel;
 
+    public boolean gameStarted;
 
 
     // METHOD DEFINITION SECTION
@@ -41,7 +42,8 @@ public class Astronaut {
         foodLevel = 0;
         isAlive = true;
         isCrashing = false;
-        rec = new Rectangle(xpos,ypos,height,width);
+        gameStarted = false;
+        rec = new Rectangle(xpos,ypos,width,height);
 
 
 
@@ -52,7 +54,7 @@ public class Astronaut {
         xpos = xpos + dx;
         ypos = ypos + dy;
 
-        rec = new Rectangle(xpos,ypos,height,width);
+        rec = new Rectangle(xpos,ypos,width,height);
 
 
     }
@@ -66,13 +68,13 @@ public class Astronaut {
         if  (ypos > 700){
             ypos = 0;}
 
-        rec = new Rectangle(xpos,ypos,height,width);
+        rec = new Rectangle(xpos,ypos,width,height);
 
 
     }
     public void bounce(){
 
-        if  (ypos > 500){
+        if  (ypos > 1000){
 //            System.out.println(dy);
 
             dy = -1*dy;
@@ -83,7 +85,7 @@ public class Astronaut {
 //            System.out.println("ji1");
             dy = -1*dy;
         }
-        if  (xpos > 500){
+        if  (xpos > 700){
             dx = -1*dx;
         }
         if  (xpos < 1){
@@ -92,7 +94,7 @@ public class Astronaut {
 
         xpos = xpos + dx;
         ypos = ypos + dy;
-        rec = new Rectangle(xpos,ypos,height,width);
+        rec = new Rectangle(xpos,ypos,width,height);
 
     }
 }
